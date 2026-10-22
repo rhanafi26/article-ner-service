@@ -14,7 +14,7 @@ def clean_text_quotes(text):
         return text
 
     text = str(text).strip()
-    text = re.sub(r"^['’]+", "", text)
+    text = re.sub(r"^['’]+|['’]+$", "", text)
     return text.strip()
 
 def load_and_profile_data():
@@ -26,8 +26,8 @@ def load_and_profile_data():
 
     df = pd.concat(dataframes, ignore_index=True)
 
-    df['title'] = df['title'].apply(clean_text_quotes)
-    df['body'] = df['body'].apply(clean_text_quotes)
+    for col in df.select_dtypes(include='object').columns:
+        df[col] = df[col].apply(clean_text_quotes)
 
     total_rows = len(df)
     print(f"Total rows in the dataset: {total_rows}")
