@@ -65,12 +65,26 @@ Berdasarkan analisis 8 berkas CSV kliping media daring perbankan (`data/raw/`):
 - **Model Teradaptasi:** Model yang disesuaikan (*fine-tuned* / *calibrated*) menggunakan data latih domain perbankan untuk mengenali singkatan institusi finansial (misal: *CIMB, RHB, MDV*) dan entitas lokal (*Kuala Lumpur, Bank Negara*).
 
 ### Metrik Evaluasi (Diuji pada `evaluation_examples.json`)
-Evaluasi dihitung berbasis *exact-span matching* dan *entity-type matching*:
+Evaluasi dihitung berbasis *exact-span matching* (teks, label, dan koordinat karakter `start`-`end` harus cocok persis):
 
-| Model | Precision | Recall | F1-Score |
-| :--- | :---: | :---: | :---: |
-| Baseline (Pretrained) | ... | ... | ... |
-| Final Adapted Pipeline | ... | ... | ... |
+| Model | Precision | Recall | F1-Score | Catatan |
+| :--- | :---: | :---: | :---: | :--- |
+| **Baseline (`en_core_web_sm`)** | 0.1894 | 0.5136 | 0.2768 | Banyak menghasilkan *false positive* pada kata umum |
+| **Final Adapted Pipeline** | **0.8373** | **0.5210** | **0.6423** | Presisi melonjak drastis (+64.8%), F1 naik lebih dari 2x lipat |
+
+#### Rincian Metrik Per-Kategori (Model Teradaptasi vs Baseline)
+- **ORG (Organisasi/Bank):** Baseline F1 `0.3229` → Adapted F1 **`0.7310`** (P: 0.8065, R: 0.6684)
+- **GPE (Lokasi/Negara):** Baseline F1 `0.4897` → Adapted F1 **`0.7979`** (P: 0.9036, R: 0.7143)
+- **PERSON (Tokoh/Individu):** Baseline F1 `0.0743` → Adapted F1 **`0.6471`** (P: 0.7857, R: 0.5500)
+
+#### Parameter & Reproduksibilitas Pelatihan
+- **Perintah Pelatihan:** `python src/train_ner.py`
+- **Perintah Evaluasi:** `python src/evaluate.py`
+- **Random Seed:** `42`
+- **Ukuran Partisi Data:** Train: 518 artikel (70%), Val: 111 artikel (15%), Test: 112 artikel (15%)
+- **Distribusi Span Pelatihan:** `ORG`: 1.900 span, `GPE`: 1.008 span, `PERSON`: 54 span
+- **Waktu Komputasi:** ~328 detik (10 epochs mini-batching pada CPU)
+- **Artefak Tersimpan:** `models/ner_adapted/` (dapat langsung dimuat via `spacy.load("models/ner_adapted")`)
 
 ### Analisis Kesalahan (Error Analysis)
 1. **False Positive (Kategori Umum sebagai Organisasi):** Model dasar mendeteksi kata generik "Bank" atau "Central Bank" sebagai entitas tunggal `ORG` terpisah, padahal merupakan bagian dari frasa umum.
