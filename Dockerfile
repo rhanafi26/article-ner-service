@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Salin folder aplikasi dan model
 COPY ./app ./app
 COPY ./models ./models
+COPY ./src ./src
 
 # Expose port yang digunakan FastAPI
 EXPOSE 8000

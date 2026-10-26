@@ -1,8 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from app.schemas import ArticleRequest, NERResponse
-from app.ner_engine import ner_engine
+from src.ner_model import ner_service  
 
-# Inisialisasi aplikasi FastAPI
 app = FastAPI(
     title="Article NER Service",
     description="API untuk ekstraksi Named Entity Recognition (NER) dari artikel",
@@ -11,17 +10,21 @@ app = FastAPI(
 
 @app.get("/")
 def read_root():
-    """Endpoint health check untuk memastikan API berjalan."""
     return {"message": "Article NER Service ready"}
 
-@app.post("/predict", response_model=NERResponse)
-def predict_entities(request: ArticleRequest):
-    """Endpoint untuk mengekstraksi entitas dari teks artikel."""
-    if not request.text.strip():
-        raise HTTPException(status_code=400, detail="Teks artikel tidak boleh kosong.")
+@app.post("/extract-entities", response_model=NERResponse)
+def extract_entities_endpoint(request: ArticleRequest):
+    if not request.body.strip():
+        raise HTTPException(status_code=400, detail="Isi artikel tidak boleh kosong.")
     
     try:
-        entities = ner_engine.extract_entities(request.text)
-        return {"entities": entities}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Gagal memproses teks: {str(e)}")
+        result = ner_service.extract_entities(
+            title=request.title,
+            body=request.body,
+            model_type=request.model_type or "adapted"
+        )
+        return result
+    except ValueError as val_err:
+        raise HTTPException(status_code=400, detail=str(val_err))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Gagal memproses teks: {str(exc)}")

@@ -1,14 +1,21 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
-class EntityResponse(BaseModel):
+class EntityItem(BaseModel):
     text: str
     label: str
-    start_char: int
-    end_char: int
+    start: int
+    end: int
+
+class MetaInfo(BaseModel):
+    entity_count: int
+    model: str
 
 class ArticleRequest(BaseModel):
-    text: str
+    title: str = Field(..., description="Judul artikel berita")
+    body: str = Field(..., description="Isi lengkap artikel berita")
+    model_type: Optional[str] = Field("adapted", description="'adapted' atau 'baseline'")
 
 class NERResponse(BaseModel):
-    entities: List[EntityResponse]
+    entities: List[EntityItem]
+    meta: MetaInfo
