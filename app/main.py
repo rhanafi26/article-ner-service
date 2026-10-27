@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.schemas import ArticleRequest, NERResponse
 from src.ner_model import ner_service  
 
@@ -6,6 +7,15 @@ app = FastAPI(
     title="Article NER Service",
     description="API untuk ekstraksi Named Entity Recognition (NER) dari artikel",
     version="1.0.0"
+)
+
+# Tambahkan blok CORS ini
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/")
