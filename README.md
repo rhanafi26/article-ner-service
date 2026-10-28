@@ -18,26 +18,36 @@ Prototipe layanan web dan REST API untuk ekstraksi entitas bernama (*Named-Entit
 
 ```text
 article-ner-service/
-├── README.md                      # Dokumentasi komprehensif proyek
-├── requirements.txt               # Daftar dependensi library Python
-├── .gitignore                     # Mengabaikan venv dan file dataset CSV mentah
-├── data/
-│   ├── raw/                       # 8 berkas CSV mentah (tidak di-commit ke Git)
-│   ├── processed/                
-│   │   ├── train_split.json           # Metadata partisi data latih (70%)
-│   │   ├── val_split.json             # Metadata partisi data validasi (15%)
-│   │   ├── test_split.json            # Metadata partisi data uji (15%)
-│   │   └── evaluation_examples.json   # 10 artikel uji berlabel manual (gold standard)
-├── src/
+├── app/
 │   ├── __init__.py
-│   ├── app.py                     # Entry point REST API dan web panel
-│   ├── data_pipeline.py           # Skrip profiling, deduplikasi, dan data splitting
-│   ├── ner_model.py               # Logika loading artefak model dan ekstraksi entitas
-│   └── static/
-│       └── index.html             # Antarmuka web panel interaktif
-└── tests/
-    ├── __init__.py
-    └── test_api.py                # Minimal 5 unit tests otomatis (pytest)
+│   ├── main.py
+│   ├── ner_engine.py
+│   └── schemas.py
+├── data/
+│   └── processed/
+│       ├── evaluation_examples.json
+│       ├── test_split.json
+│       ├── train_split.json
+│       └── val_split.json
+├── models/
+│   └── ner_adapted/
+│       ├── attribute_ruler/
+│       │   └── patterns
+│       ├── entity_ruler/
+│       │   ├── cfg
+│       │   └── patterns.jsonl
+│       ├── lemmatizer/
+│       │   └── lookups/
+│       │       └── lookups.bin
+│       ├── ner/
+│       │   ├── cfg
+│       │   └── model
+│       ├── config.cfg
+│       └── meta.json
+├── .dockerignore
+├── .gitignore
+├── Dockerfile
+└── README.md
 ```
 
 ---
